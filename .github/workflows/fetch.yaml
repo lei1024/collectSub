@@ -49,6 +49,12 @@ jobs:
         git add ./sub  # 这是 pre_check.py 定义的输出路径
         git commit -m "🍀 爬取订阅源 $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
 
-    - name: 强制推送更改
+    - name: 拉取最新的远程更改
       run: |
-        git push origin main --force
+        git pull origin main --rebase
+
+    - name: 推送更改
+      uses: ad-m/github-push-action@master
+      with:
+        branch: main
+        github_token: ${{ secrets.GITHUB_TOKEN }}
