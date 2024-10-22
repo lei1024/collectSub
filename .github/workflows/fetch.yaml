@@ -5,15 +5,10 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '0 */4 * * *' # 每隔4小时执行一次
   watch:
     types: started
-  # - cron: '0 3,12 * * *'
-  # -'0 */4 * * *'
-  # -该规则表示每天从 0 点开始，每隔 4 个小时执行一次任务
-  # 表达式生成  https://crontab.guru/
 
- 
 jobs:
   fetch:
     runs-on: ubuntu-latest
@@ -41,19 +36,19 @@ jobs:
     - name: 安装依赖
       run: |
         pip install -r ./requirements.txt
+
     - name: 执行任务
       run: |
         python ./main.py
-    - name: Commit
+
+    - name: Commit 更改
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
 
-        git add ./sub   #这是pre_check.py定义的输出路径
-        git commit -m "🍀 爬取订阅源 $(date '+%Y-%m-%d %H:%M:%S')"
-        
-    - name: 推送更改
-      uses:  ad-m/github-push-action@master
-      with:
-         # github_token: ${{ secrets.TOKEN }}
-         branch: main
+        git add ./sub  # 这是 pre_check.py 定义的输出路径
+        git commit -m "🍀 爬取订阅源 $(date '+%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+
+    - name: 强制推送更改
+      run: |
+        git push origin main --force
